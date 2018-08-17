@@ -1,0 +1,11 @@
+{
+  "include": [
+    "src/*.ts",
+    "src/test/*.ts"
+  ],
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "outDir": "build",
+  }
+}
