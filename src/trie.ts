@@ -48,23 +48,23 @@ export class trie<T> {
     }
   }
 
-  public map(prefix: string, func: (key: string, value: T) => any): void {
-    type trie_kv_tuple<T> = [string, trie_node<T>];
-    const stack: trie_kv_tuple<T>[] = [];
-
+  public map(prefix: string, func: (key: string, value: T) => any): any[] {
+    const mapped = [];
     const node = this.get_node(prefix);
+    const stack: [string, trie_node<T>][] = [];
     if (node) {
       stack.push([prefix, node]);
     }
     while (stack.length) {
       const [key, node] = stack.pop();
       if (node.terminal) {
-        func(key, node.value);
+        mapped.push(func(key, node.value));
       }
       for (const c in node.children) {
         stack.push([key + c, node.children[c]]);
       }
     }
+    return mapped;
   }
 
   private get_node(key: string): trie_node<T> | null {

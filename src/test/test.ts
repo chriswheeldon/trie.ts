@@ -78,6 +78,22 @@ describe("trie", () => {
     });
   });
   describe("map", () => {
+    it("should callback with correct keys and values", () => {
+      let calls = 0;
+      const t = new trie<number>();
+      t.insert("", 0);
+      t.insert("a", 1);
+      t.insert("ab", 2);
+      const keys = [];
+      const values = t.map("", (key, value) => {
+        calls += 1;
+        keys.push(key);
+        return value;
+      });
+      assert.equal(3, calls);
+      assert.deepEqual(["","a","ab"], keys);
+      assert.deepEqual([0,1,2], values);
+    });
     it("should not callback if no matches", () => {
       let calls = 0;
       const t = new trie<number>();
