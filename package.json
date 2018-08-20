@@ -1,6 +1,6 @@
 {
   "name": "trie.ts",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": {
     "name": "Chris Wheeldon",
     "email": "cdwheeldon@gmail.com"
@@ -17,8 +17,8 @@
     "prefix",
     "tree"
   ],
-  "main": "build/trie.js",
-  "types": "build/trie.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "devDependencies": {
     "mocha": "^5.2.0",
     "tslint": "^5.11.0",

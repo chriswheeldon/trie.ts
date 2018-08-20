@@ -1,4 +1,4 @@
-import { trie } from "../trie";
+import { trie } from "../index";
 import * as assert from "assert";
 import { describe, it } from "mocha";
 

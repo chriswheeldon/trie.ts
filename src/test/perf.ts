@@ -2,7 +2,7 @@ import { performance, PerformanceObserver } from 'perf_hooks';
 import * as fs from 'fs';
 import * as readline from 'readline';
 import * as assert from 'assert';
-import { trie } from '../trie';
+import { trie } from '../index';
 
 const words = []
 const t = new trie<number>();
