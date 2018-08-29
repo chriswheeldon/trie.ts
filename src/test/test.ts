@@ -29,9 +29,52 @@ describe("trie", () => {
     });
   });
 
+  describe("length", () => {
+    it("should initially be 0", () => {
+      const t = new trie<number>();
+      assert.equal(0, t.length);
+    });
+    it("should increment on insert", () => {
+      const t = new trie<number>();
+      t.insert("", 1);
+      assert.equal(1, t.length);
+      t.insert("a", 2);
+      assert.equal(2, t.length);
+      t.insert("c", 3);
+      assert.equal(3, t.length);
+    });
+    it("should decrement on remove", () => {
+      const t = new trie<number>();
+      t.insert("", 1);
+      t.insert("a", 2);
+      t.insert("c", 3);
+      t.remove("");
+      assert.equal(2, t.length);
+      t.remove("c");
+      assert.equal(1, t.length);
+      t.remove("a");
+      assert.equal(0, t.length);
+      t.remove("a");
+      assert.equal(0, t.length);
+    });
+    it("should handle duplicate insert", () => {
+      const t = new trie<number>();
+      t.insert("a", 1);
+      t.insert("a", 1);
+      t.insert("a", 1);
+      t.insert("a", 1);
+      assert.equal(1, t.length);
+    });
+  });
+
   describe("get", () => {
     it("should return null if key not found", () => {
       const t = new trie<number>();
+      assert.equal(null, t.get("abc"));
+    });
+    it("should return null if prefix match", () => {
+      const t = new trie<number>();
+      t.insert("abcdef", 99);
       assert.equal(null, t.get("abc"));
     });
     it("should return value if key found", () => {
@@ -47,6 +90,7 @@ describe("trie", () => {
       t.insert("", 99);
       assert.equal(true, t.contains(""));
       assert.equal(99, t.get(""));
+      assert.equal(1, t.length);
     });
     it("should handle common prefix", () => {
       const t = new trie<number>();
@@ -56,6 +100,14 @@ describe("trie", () => {
       assert.equal(1, t.get(""));
       assert.equal(2, t.get("abc"));
       assert.equal(3, t.get("abcdef"));
+      assert.equal(3, t.length);
+    });
+    it("should replace if duplicate", () => {
+      const t = new trie<number>();
+      t.insert("abc", 2);
+      t.insert("abc", 3);
+      t.insert("abc", 4);
+      assert.equal(4, t.get("abc"));
     });
   });
 
@@ -77,6 +129,7 @@ describe("trie", () => {
       assert.equal(true, t.contains("abcdef"));
     });
   });
+
   describe("map", () => {
     it("should callback with correct keys and values", () => {
       let calls = 0;

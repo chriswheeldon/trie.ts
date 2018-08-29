@@ -11,9 +11,15 @@ class trie_node<T> {
 
 export class trie<T> {
   private root: trie_node<T>;
+  private elements: number;
 
   constructor() {
     this.root = new trie_node<T>();
+    this.elements = 0;
+  }
+
+  get length(): number {
+    return this.elements;
   }
 
   public get(key: string): T | null {
@@ -37,6 +43,9 @@ export class trie<T> {
       }
       node = node.children[key[i]];
     }
+    if (!node.terminal) {
+      this.elements += 1;
+    }
     node.terminal = true;
     node.value = value;
   }
@@ -45,10 +54,11 @@ export class trie<T> {
     const node = this.get_node(key);
     if (node) {
       node.terminal = false;
+      this.elements -= 1;
     }
   }
 
-  public map(prefix: string, func: (key: string, value: T) => any): any[] {
+  public map<U>(prefix: string, func: (key: string, value: T) => U): U[] {
     const mapped = [];
     const node = this.get_node(prefix);
     const stack: [string, trie_node<T>][] = [];
