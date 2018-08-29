@@ -18,7 +18,7 @@ export class trie<T> {
     this.elements = 0;
   }
 
-  get length(): number {
+  public get length(): number {
     return this.elements;
   }
 
