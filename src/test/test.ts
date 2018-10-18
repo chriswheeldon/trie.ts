@@ -27,6 +27,11 @@ describe("trie", () => {
       t.insert("hello", 99);
       assert.equal(true, t.contains("hello"));
     });
+    it("should return true if exact match on empty string", () => {
+      const t = new trie<number>();
+      t.insert("", 99);
+      assert.equal(true, t.contains(""));
+    });
   });
 
   describe("length", () => {
@@ -109,6 +114,26 @@ describe("trie", () => {
       t.insert("abc", 4);
       assert.equal(4, t.get("abc"));
     });
+    it("should handle node insertion", () => {
+      const t = new trie<number>();
+      t.insert("abcdef", 3);
+      t.insert("abc", 2);
+      t.insert("", 1);
+      assert.equal(1, t.get(""));
+      assert.equal(2, t.get("abc"));
+      assert.equal(3, t.get("abcdef"));
+      assert.equal(3, t.length);
+    });
+    it("should handle node splitting", () => {
+      const t = new trie<number>();
+      t.insert("bar", 3);
+      t.insert("bat", 2);
+      t.insert("baz", 1);
+      assert.equal(1, t.get("baz"));
+      assert.equal(2, t.get("bat"));
+      assert.equal(3, t.get("bar"));
+      assert.equal(3, t.length);
+    });
   });
 
   describe("remove", () => {
@@ -144,8 +169,8 @@ describe("trie", () => {
         return value;
       });
       assert.equal(3, calls);
-      assert.deepEqual(["","a","ab"], keys);
-      assert.deepEqual([0,1,2], values);
+      assert.deepEqual(["", "a", "ab"], keys);
+      assert.deepEqual([0, 1, 2], values);
     });
     it("should not callback if no matches", () => {
       let calls = 0;
@@ -179,7 +204,7 @@ describe("trie", () => {
         values.push(value);
       });
       assert.equal(2, calls);
-      assert.deepEqual([2,3], values);
+      assert.deepEqual([2, 3], values);
     });
     it("should handle multiple forks", () => {
       const t = new trie<number>();
@@ -197,7 +222,7 @@ describe("trie", () => {
         values.push(value);
       });
       assert.equal(6, calls);
-      assert.deepEqual([0,1,2,3,4,5], values.sort());
+      assert.deepEqual([0, 1, 2, 3, 4, 5], values.sort());
     });
     it("should handle remove during iteration", () => {
       const t = new trie<number>();
@@ -214,7 +239,7 @@ describe("trie", () => {
         values.push(value);
       });
       assert.equal(3, calls);
-      assert.deepEqual([0,1,3], values);
+      assert.deepEqual([0, 1, 3], values);
     });
   });
 });

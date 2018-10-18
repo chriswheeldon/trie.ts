@@ -1,11 +1,11 @@
 class trie_node<T> {
   public terminal: boolean;
   public value: T;
-  public children: { [key: string]: trie_node<T> };
+  public children: Map<string, trie_node<T>>;
 
   constructor() {
     this.terminal = false;
-    this.children = {};
+    this.children = new Map();
   }
 }
 
@@ -23,7 +23,7 @@ export class trie<T> {
   }
 
   public get(key: string): T | null {
-    const node = this.get_node(key);
+    const node = this.getNode(key);
     if (node) {
       return node.value;
     }
@@ -31,27 +31,54 @@ export class trie<T> {
   }
 
   public contains(key: string): boolean {
-    const node = this.get_node(key);
+    const node = this.getNode(key);
     return !!node;
   }
 
   public insert(key: string, value: T): void {
     let node = this.root;
-    for (let i = 0; i < key.length; i += 1) {
-      if (!node.children[key[i]]) {
-        node.children[key[i]] = new trie_node<T>();
+    let remaining = key;
+    while (remaining.length > 0) {
+      let child: trie_node<T> = null;
+      for (const childKey of node.children.keys()) {
+        const prefix = this.commonPrefix(remaining, childKey);
+        if (!prefix.length) {
+          continue;
+        }
+        if (prefix.length === childKey.length) {
+          // enter child node
+          child = node.children.get(childKey);
+          remaining = remaining.slice(childKey.length);
+          break;
+        } else {
+          // split the child
+          child = new trie_node<T>();
+          child.children.set(
+            childKey.slice(prefix.length),
+            node.children.get(childKey)
+          );
+          node.children.delete(childKey);
+          node.children.set(prefix, child);
+          remaining = remaining.slice(prefix.length);
+          break;
+        }
       }
-      node = node.children[key[i]];
+      if (!child && remaining.length) {
+        child = new trie_node<T>();
+        node.children.set(remaining, child);
+        remaining = "";
+      }
+      node = child;
     }
     if (!node.terminal) {
+      node.terminal = true;
       this.elements += 1;
     }
-    node.terminal = true;
     node.value = value;
   }
 
   public remove(key: string): void {
-    const node = this.get_node(key);
+    const node = this.getNode(key);
     if (node) {
       node.terminal = false;
       this.elements -= 1;
@@ -60,7 +87,7 @@ export class trie<T> {
 
   public map<U>(prefix: string, func: (key: string, value: T) => U): U[] {
     const mapped = [];
-    const node = this.get_node(prefix);
+    const node = this.getNode(prefix);
     const stack: [string, trie_node<T>][] = [];
     if (node) {
       stack.push([prefix, node]);
@@ -70,21 +97,38 @@ export class trie<T> {
       if (node.terminal) {
         mapped.push(func(key, node.value));
       }
-      for (const c in node.children) {
-        stack.push([key + c, node.children[c]]);
+      for (const c of node.children.keys()) {
+        stack.push([key + c, node.children.get(c)]);
       }
     }
     return mapped;
   }
 
-  private get_node(key: string): trie_node<T> | null {
+  private getNode(key: string): trie_node<T> | null {
     let node = this.root;
-    for (let i = 0; i < key.length; i += 1) {
-      node = node.children[key[i]];
-      if (!node) {
+    let remaining = key;
+    while (node && remaining.length > 0) {
+      let child = null;
+      for (let i = 1; i <= remaining.length; i += 1) {
+        child = node.children.get(remaining.slice(0, i));
+        if (child) {
+          remaining = remaining.slice(i);
+          break;
+        }
+      }
+      node = child;
+    }
+    return remaining.length === 0 && node && node.terminal ? node : null;
+  }
+
+  private commonPrefix(a: string, b: string): string {
+    const shortest = Math.min(a.length, b.length);
+    let i = 0;
+    for (; i < shortest; i += 1) {
+      if (a[i] !== b[i]) {
         break;
       }
     }
-    return !!node && node.terminal ? node : null;
+    return a.slice(0, i);
   }
 }

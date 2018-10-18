@@ -1,12 +1,10 @@
 {
-  "include": [
-    "src/*.ts",
-    "src/test/*.ts"
-  ],
+  "include": ["src/*.ts", "src/test/*.ts"],
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es5",
+    "target": "es2015",
     "outDir": "build",
-    "declaration": true
+    "declaration": true,
+    "alwaysStrict": true
   }
 }
